@@ -1,47 +1,49 @@
 
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 
+import useDebounce from '@/hooks/useDebounce';
+
+import AutoCompleteInput from '@/components/autoComplete/components/AutoCompleteInput';
 import AutoCompleteItem from '@/components/autoComplete/components/AutoCompleteItem';
+import ResultContainer from '@/components/autoComplete/components/ResultContainer';
+import UseHandleClickOutSide from '@/components/autoComplete/hooks/useHandleClickOutSide';
 import { AutocompleteItem, AutocompleteKey } from '@/components/autoComplete/type';
-import TimesButton from '@/components/buttons/TimesButton';
-import Input from '@/components/input/input';
-import Loading from '@/components/Loading';
 
 
 type AutocompleteProps<T extends AutocompleteItem, K extends AutocompleteKey<T>> = {
   data: Array<T>;
   title: K;
-  search: string;
+  label?: string;
   setSearch: Dispatch<SetStateAction<string>>;
   setSelected: Dispatch<SetStateAction<T | undefined>>;
   loading?: boolean;
+  noResultsMessage?: string;
 };
 
 const Autocomplete = <T extends AutocompleteItem, K extends AutocompleteKey<T>>({
   data,
+  label,
   title,
-  search,
   setSearch,
   setSelected,
   loading,
+  noResultsMessage = "There is no results"
 }: AutocompleteProps<T, K>) => {
   const [showResults, setShowResults] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  const [filter, setFilter] = useState<string>('');
+  const debouncedValue = useDebounce<string>(filter, 500);
+
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (inputRef.current && !inputRef.current.contains(event.target as Node) && !resultsRef.current?.contains(event.target as Node)) {
-        setShowResults(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+    setSearch(debouncedValue);
+  }, [debouncedValue, setSearch]);
+
+  UseHandleClickOutSide({ inputRef, resultsRef, setShowResults });
 
   useEffect(() => {
     if (highlightedIndex >= 0 && highlightedIndex < itemRefs.current.length) {
@@ -58,19 +60,6 @@ const Autocomplete = <T extends AutocompleteItem, K extends AutocompleteKey<T>>(
     }
   }, [highlightedIndex]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    setSelected(undefined);
-    setShowResults(true);
-  };
-
-  const handleSelectItem = (item: T) => {
-    setSelected(item);
-    setSearch(item[title].toString());
-    setShowResults(false);
-    setHighlightedIndex(-1);
-  };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'ArrowDown') {
       setHighlightedIndex((prevIndex) => (prevIndex + 1) % data.length);
@@ -83,40 +72,46 @@ const Autocomplete = <T extends AutocompleteItem, K extends AutocompleteKey<T>>(
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilter(e.target.value);
+    setSelected(undefined);
+    setShowResults(true);
+  };
+
+  const handleSelectItem = (item: T) => {
+    setSelected(item);
+    setSearch(item[title].toString());
+    setFilter(item[title].toString());
+    setShowResults(false);
+    setHighlightedIndex(-1);
+  };
+
   const clearSearch = () => {
     setSearch('');
-    if (setSelected)
-      setSelected(undefined);
+    setFilter('');
+    setSelected(undefined);
     setShowResults(false);
     setHighlightedIndex(-1);
   };
 
   return (
     <div className="relative w-full">
-      <div className="flex rounded-mds w-full">
-        <Input
-          ref={inputRef}
-          value={search}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          placeholder="Search..."
-        />
-        {search && !loading && (
-          <TimesButton onClick={clearSearch} />
-        )}
-        {loading && <div className='absolute right-2 top-2'>  <Loading /></div>}
-      </div>
+      <AutoCompleteInput clearSearch={clearSearch} filter={filter} handleInputChange={handleInputChange} handleKeyDown={handleKeyDown} inputRef={inputRef} label={label || 'Search'} loading={loading || false} />
+
       {showResults && data.length > 0 && (
-        <div
-          ref={resultsRef}
-          className="absolute border mt-1 rounded-md bg-white w-full max-h-60 overflow-y-auto z-10"
-        >
+        <ResultContainer resultsRef={resultsRef}>
           {data.map((item, index) => (
             <AutoCompleteItem title={item[title].toString()} key={index} highlightedIndex={highlightedIndex} index={index} itemRefs={itemRefs} onMouseEnter={() => setHighlightedIndex(index)} onClick={() => handleSelectItem(item)} />
           ))}
-        </div>
+        </ResultContainer>
       )}
-    </div>
+
+      {showResults && debouncedValue && data.length == 0 && (
+        <ResultContainer resultsRef={resultsRef}>
+          <small className="block p-2 text-gray-400">{noResultsMessage}</small>
+        </ResultContainer>
+      )}
+    </div >
   );
 };
 

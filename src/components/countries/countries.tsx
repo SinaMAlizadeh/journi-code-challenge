@@ -22,7 +22,7 @@ export function Countries({ latLng }: CountriesProps) {
   const selectedCountry = useMemo(() => getSelectedCountry(selectedAutocompleteItem?.id, countries), [countries, selectedAutocompleteItem?.id]);
 
   return <>
-    <Autocomplete data={searchableCountries} search={search} loading={loading} setSearch={setSearch} title='title' setSelected={setSelectedAutocompleteItem} />
+    <Autocomplete data={searchableCountries} loading={loading} setSearch={setSearch} title='title' setSelected={setSelectedAutocompleteItem} label='Find your closest country' />
     {selectedCountry && <div className='mt-3 w-full'> <CountryDetails country={selectedCountry} /></div>}
   </>
 }

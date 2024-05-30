@@ -15,19 +15,18 @@ export async function GET(req: NextRequest) {
       return NextResponse.json([]);
     }
 
-    let country_data = await countryService.getAllCountry();
-    
-    if (search) {
-      country_data = filterCountry(
-        country_data,
-        search.toString(),
-        Number(lat?.toString()),
-        Number(lng?.toString()),
-      );
-      
+    const latitude = Number(lat);
+    const longitude = Number(lng);
+
+    if (isNaN(latitude) || isNaN(longitude)) {
+      return NextResponse.json({ error: 'Invalid coordinates' }, { status: 400 });
     }
-    console.log(country_data)
-    return NextResponse.json(country_data);
+
+    const country_data = await countryService.getAllCountry();
+    const filtered_country_data = filterCountry(country_data, search, latitude, longitude);
+
+    return NextResponse.json(filtered_country_data);
+    
   } catch (error) {
     console.error('Error fetching countries:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

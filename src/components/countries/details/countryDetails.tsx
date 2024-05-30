@@ -21,7 +21,7 @@ function CountryDetails({ country }: Props) {
     <div className="flex flex-col gap-4">
       <DetailsItem title='Capital' value={country?.capital} />
       <DetailsItem title='Population' value={country?.population.toLocaleString()} />
-      <DetailsItem title='Area' value={country?.area?.toLocaleString()} />
+      <DetailsItem title='Area' value={country?.area?.toLocaleString() + " km²"} />
       <DetailsItem title='NativeName' value={country?.nativeName} />
       <DetailsItem title='Timezones' value={country?.timezones.toString()} />
     </div>

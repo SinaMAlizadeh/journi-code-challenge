@@ -20,19 +20,20 @@ import { getIpInformation } from '@/services/ip';
 // to customize the default configuration.
 
 export default async function HomePage() {
- const locationInfo = await getIpInformation();
- const latLng : Location = { 
-  lat : locationInfo.lat,
-  lng : locationInfo.lon
+
+  const locationInfo = await getIpInformation();
+  const latLng: Location = {
+    lat: locationInfo.lat,
+    lng: locationInfo.lon
   }
-  return ( 
+  return (
     <main>
       <Head>
         <title>Hi</title>
       </Head>
       <section className='bg-white'>
-        <div className='layout relative flex min-h-screen flex-col items-center justify-center py-12 text-center'>
-            <Countries latLng={latLng} />
+        <div className='layout relative w-1/2 flex min-h-screen flex-col items-center justify-start py-12 text-center'>
+          <Countries latLng={latLng} />
         </div>
       </section>
     </main>

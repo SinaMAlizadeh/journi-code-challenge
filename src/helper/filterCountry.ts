@@ -15,7 +15,6 @@ export const filterCountry = (
   return sortCountries(filterCountries, lat, lng);
 };
 
-
 const sortCountries = (
   countries: Array<Country>,
   selectedLat: number,
@@ -23,8 +22,8 @@ const sortCountries = (
 ): Array<Country> => {
   return countries.sort(function (a, b) {
     return (
-      distance(selectedLat, selectedLng, a.latlng[0] ,a.latlng[1]) -
-      distance(selectedLat, selectedLng, a.latlng[0] ,a.latlng[1])
+      distance(selectedLat, selectedLng, a.latlng[0] , a.latlng[1]) -
+      distance(selectedLat, selectedLng, b.latlng[0] , b.latlng[1])
     );
   });
 };
