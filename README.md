@@ -21,6 +21,7 @@ For creating the autocomplete, I didn't write it just for country information. I
 - **Debounce Function**: Avoids making requests on every keystroke.
 - **Keyboard Navigation**: Users can easily select between items using the arrow keys.
 - **Close Result Modal**: The result modal closes when the user clicks outside the autocomplete.
+- **Story Book**: Config storybook for create documentation in project
 
 ## Backend
 
