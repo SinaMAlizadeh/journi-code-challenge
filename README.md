@@ -1,134 +1,272 @@
-# Next.js + Tailwind CSS + TypeScript Starter and Boilerplate
+# Country Search Engine
 
-<div align="center">
-  <h2>🔋 ts-nextjs-tailwind-starter</h2>
-  <p>Next.js + Tailwind CSS + TypeScript starter packed with useful development features.</p>
-  <p>Made by <a href="https://theodorusclarence.com">Theodorus Clarence</a></p>
+## Challenge
 
-[![GitHub Repo stars](https://img.shields.io/github/stars/theodorusclarence/ts-nextjs-tailwind-starter)](https://github.com/theodorusclarence/ts-nextjs-tailwind-starter/stargazers)
-[![Depfu](https://badges.depfu.com/badges/fc6e730632ab9dacaf7df478a08684a7/overview.svg)](https://depfu.com/github/theodorusclarence/ts-nextjs-tailwind-starter?project_id=30160)
-[![Last Update](https://img.shields.io/badge/deps%20update-every%20sunday-blue.svg)](https://shields.io/)
+The challenge is to find the closest country based on the location and IP of the user.
 
-</div>
+## Demo
 
-## Features
+A live demo of the deployment can be found at [journi-code-challenge.vercel.app](https://journi-code-challenge.vercel.app/).
 
-This repository is 🔋 battery packed with:
+## Project Setup
 
-- ⚡️ Next.js 14 with App Router
-- ⚛️ React 18
-- ✨ TypeScript
-- 💨 Tailwind CSS 3 — Configured with CSS Variables to extend the **primary** color
-- 💎 Pre-built Components — Components that will **automatically adapt** with your brand color, [check here for the demo](https://tsnext-tw.thcl.dev/components)
-- 🃏 Jest — Configured for unit testing
-- 📈 Absolute Import and Path Alias — Import components using `@/` prefix
-- 📏 ESLint — Find and fix problems in your code, also will **auto sort** your imports
-- 💖 Prettier — Format your code consistently
-- 🐶 Husky & Lint Staged — Run scripts on your staged files before they are committed
-- 🤖 Conventional Commit Lint — Make sure you & your teammates follow conventional commit
-- ⏰ Release Please — Generate your changelog by activating the `release-please` workflow
-- 👷 Github Actions — Lint your code on PR
-- 🚘 Automatic Branch and Issue Autolink — Branch will be automatically created on issue **assign**, and auto linked on PR
-- 🔥 Snippets — A collection of useful snippets
-- 👀 Open Graph Helper Function — Awesome open graph generated using [og](https://github.com/theodorusclarence/og), fork it and deploy!
-- 🗺 Site Map — Automatically generate sitemap.xml
-- 📦 Expansion Pack — Easily install common libraries, additional components, and configs.
+First of all, I created a Next.js project using the `ts-nextjs-tailwind-starter` boilerplate as mentioned in the documentation. I need to use Next.js because I want to get the IP and information of the user, as well as latitude and longitude for searching the nearest countries. By doing this, I generated a server-side component to get the user's location, and each time, in each re-render or request, we don't need to get the user's location.
 
-See the 👉 [feature details and changelog](https://github.com/theodorusclarence/ts-nextjs-tailwind-starter/blob/main/CHANGELOG.md) 👈 for more.
+## Autocomplete Component
 
-You can also check all of the **details and demos** on my blog post:
+For creating the autocomplete, I didn't write it just for country information. Instead, I wrote a generic component to use with different types of models, and it can be used throughout the application with different models. The user just needs the proper information of the list based on its model to easily use the autocomplete.
 
-- [One-stop Starter to Maximize Efficiency on Next.js & Tailwind CSS Projects](https://theodorusclarence.com/blog/one-stop-starter)
+### Features
 
-## Getting Started
+- **Debounce Function**: Avoids making requests on every keystroke.
+- **Keyboard Navigation**: Users can easily select between items using the arrow keys.
+- **Close Result Modal**: The result modal closes when the user clicks outside the autocomplete.
 
-### 1. Clone this template using one of the three ways
+## Backend
 
-1. Use this repository as template
+The server side of the project contains a GET country API that filters countries based on the user's search and then sorts by the starting character of the user's entered key.
 
-   **Disclosure:** by using this repository as a template, there will be an attribution on your repository.
+### Finding the Nearest Country
 
-   I'll appreciate if you do, so this template can be known by others too 😄
+For finding the nearest country, I use the Haversine formula and sort based on the user's latitude and longitude.
 
-   ![Use as template](https://user-images.githubusercontent.com/55318172/129183039-1a61e68d-dd90-4548-9489-7b3ccbb35810.png)
+## Project Structure
 
-2. Using `create-next-app`
+- **helpers**: Contains helper functions used throughout the project.
+- **hooks**: Contains custom hooks.
+- **models**: Contains models or types shared within the project.
+- **services**: Contains all service and request calls to third-party APIs or the server.
+- **components**: Contains the components used in the project.
+- **app**: Contains the api and pages.
 
-   ```bash
-   pnpm create next-app  -e https://github.com/theodorusclarence/ts-nextjs-tailwind-starter ts-pnpm
-   ```
+## Code Description and Samples
 
-   If you still want to use **pages directory** (_is not actively maintained_) you can use this command
+### Custom Hook for Fetching Country Information
 
-   ```bash
-   npx create-next-app -e https://github.com/theodorusclarence/ts-nextjs-tailwind-starter/tree/pages-directory project-name
-   ```
+The custom hook `UseGetCountries` fetches country information from the server:
 
-3. Using `degit`
-
-   ```bash
-   npx degit theodorusclarence/ts-nextjs-tailwind-starter YOUR_APP_NAME
-   ```
-
-4. Deploy to Vercel
-
-   [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https%3A%2F%2Fgithub.com%2Ftheodorusclarence%2Fts-nextjs-tailwind-starter)
-
-### 2. Install dependencies
-
-It is encouraged to use **pnpm** so the husky hooks can work properly.
-
-```bash
-pnpm install
+```typescript
+const { countries, loading } = UseGetCountries({
+  location: latLng,
+  search: search,
+});
 ```
 
-### 3. Run the development server
+In UseGetCountries custom hooks, I use:
 
-You can start the server using this command:
-
-```bash
-pnpm dev
+```typescript
+const fetchCountries = useCallback(async () => {
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. You can start editing the page by modifying `src/pages/index.tsx`.
+Fetching data to avoid generating the function in each render and also handling the loading state by request call.
 
-### 4. Change defaults
+### Using `useMemo` for Results
 
-There are some things you need to change including title, urls, favicons, etc.
+In the country component, I use useMemo for the result of countries when we want to create a list for autocomplete:
 
-Find all comments with !STARTERCONF, then follow the guide.
+```typescript
+const searchableCountries = useMemo(
+  () => generateCountriesForAutocomplete(countries),
+  [countries]
+);
+```
 
-Don't forget to change the package name in package.json
+It dosen't need to send all of the information to autocomplete, reducing the time of search and filter based on small models. Also, the generic model that accepts a model in autocomplete only accepts string and number fields, so we need to create appropriate data for autocomplete.
 
-### 5. Commit Message Convention
+### Generic Autocomplete Component
 
-This starter is using [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/), it is mandatory to use it to commit changes.
+The autocomplete component is generic. It can be used with various models and in different parts of the application.
 
-## Projects using ts-nextjs-tailwind-starter
+```typescript
+export type AutocompleteItem = Record<string, string | number>;
+export type AutocompleteKey<T extends AutocompleteItem> = keyof T;
 
-<!--
-TEMPLATE
-- [sitename](https://sitelink.com) ([Source](https://github.com/githublink))
-- [sitename](https://sitelink.com)
--->
+type AutocompleteProps<
+  T extends AutocompleteItem,
+  K extends AutocompleteKey<T>
+> = {
+  data: Array<T>;
+  title: K;
+  label?: string;
+  setSearch: Dispatch<SetStateAction<string>>;
+  setSelected: Dispatch<SetStateAction<T | undefined>>;
+  loading?: boolean;
+  noResultsMessage?: string;
+};
+```
 
-- [theodorusclarence.com](https://theodorusclarence.com) ([Source](https://github.com/theodorusclarence/theodorusclarence.com))
-- [Notiolink](https://notiolink.thcl.dev/) ([Source](https://github.com/theodorusclarence/notiolink))
-- [NextJs + Materia UI + Typescript](https://github.com/AlexStack/nextjs-materia-mui-typescript-hook-form-scaffold-boilerplate-starter)
+I defined:
 
-Are you using this starter? Please add your page (and repo) to the end of the list via a [Pull Request](https://github.com/theodorusclarence/ts-nextjs-tailwind-starter/edit/main/README.md). 😃
+```typescript
+export type AutocompleteKey<T extends AutocompleteItem> = keyof T;
+```
 
-## Expansion Pack 📦
+The model user just has to select one of the keys of the object model and can't choose a field or object key that does not exist in the model. Also, it has an auto-suggest feature.
 
-This starter is now equipped with an [expansion pack](https://github.com/theodorusclarence/expansion-pack).
+### Handling Refs for Autocomplete Features
 
-You can easily add expansion such as React Hook Form + Components, Storybook, and more just using a single command line.
+I define three refs for the page to handle autocomplete features:
 
-<https://user-images.githubusercontent.com/55318172/146631994-e1cac137-1664-4cfe-950b-a96decc1eaa6.mp4>
+```typescript
+const inputRef = useRef<HTMLInputElement>(null);
+const resultsRef = useRef<HTMLDivElement>(null);
+const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+```
 
-Check out the [expansion pack repository](https://github.com/theodorusclarence/expansion-pack) for the commands
+I create a ref for each item and add them to an array:
 
-### App Router Update
+```typescript
+const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+```
 
-Due to App Router update, the expansion pack is currently **outdated**. It will be updated in the future. You can still use them by copy and pasting the files.
-# journi-code-challenge
+It helps to get the correct item that the user wants to highlight.
+
+### Custom Debounce Hook
+
+I create custom debounce hooks that can be used throughout the application:
+
+```typescript
+const debouncedValue = useDebounce<string>(filter, 500);
+```
+
+It handles the search value to reduce sending requests to the server with each key action by the user.
+
+### Custom Hook to Handle Click Outside
+
+I wrote a custom hook to manage and close the result modal of the search. It gets refs of the elements that should not do any action if the user clicks on them:
+
+```typescript
+const handleClickOutside = (event: MouseEvent) => {
+  if (
+    inputRef.current &&
+    !inputRef.current.contains(event.target as Node) &&
+    !resultsRef.current?.contains(event.target as Node)
+  ) {
+    setShowResults(false);
+  }
+};
+```
+
+### Handling Scroll and Highlight in Autocomplete
+
+There are two main action functions for autocomplete:
+
+```typescript
+useEffect(() => {
+  if (highlightedIndex >= 0 && highlightedIndex < itemRefs.current.length) {
+    const highlightedItem = itemRefs.current[highlightedIndex];
+    if (highlightedItem && resultsRef.current) {
+      const { top: containerTop, bottom: containerBottom } =
+        resultsRef.current.getBoundingClientRect();
+      const { top: itemTop, bottom: itemBottom } =
+        highlightedItem.getBoundingClientRect();
+      if (itemTop < containerTop) {
+        highlightedItem.scrollIntoView({ block: 'nearest' });
+      } else if (itemBottom > containerBottom) {
+        highlightedItem.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }
+}, [highlightedIndex]);
+```
+
+This handles the scroll of the result container. If the user works with the arrow keys to select an item, and the number of items becomes more than the height of the container, they can see the highlighted items. So I have to watch the selected or highlighted item to force the scroll to be near the item. and another is :
+
+### Handling Key Down Events
+
+```typescript
+const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (e.key === 'ArrowDown') {
+    setHighlightedIndex((prevIndex) => (prevIndex + 1) % data.length);
+  } else if (e.key === 'ArrowUp') {
+    setHighlightedIndex(
+      (prevIndex) => (prevIndex + data.length - 1) % data.length
+    );
+  } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+    handleSelectItem(data[highlightedIndex]);
+  } else if (e.key === 'Escape') {
+    setShowResults(false);
+  }
+};
+```
+
+This function handles and changes the index of the item for selection. The user can easily select an item using the keys, just changing the index highlighted in the function.
+
+## Backend API
+
+In the backend API, I wrote a GET API call with the endpoint `/api/countries?search=united&lat=37.7749&lng=-122.4194` for the query parameters. It gets user input information and responds with countries filtered by latitude and longitude.
+
+### Getting Query Parameters
+
+```typescript
+const search = searchParams.get('search');
+const lat = searchParams.get('lat');
+const lng = searchParams.get('lng');
+```
+
+### Filtering Countries
+
+First, it filters countries by using `trim()` to remove any leading or trailing spaces, and then uses `startsWith()` to search by the name of the countries:
+
+```typescript
+const filterCountries = countries.filter((country) =>
+  country.name
+    .trim()
+    .toLocaleLowerCase()
+    .startsWith(search.trim().toLocaleLowerCase())
+);
+```
+
+### Sorting Results by Latitude and Longitude
+
+The result must be sorted by latitude and longitude of the user input, so I use a helper function for sorting:
+
+```typescript
+countries.sort(function (a, b) {
+  return (
+    distance(selectedLat, selectedLng, a.latlng[0], a.latlng[1]) -
+    distance(selectedLat, selectedLng, b.latlng[0], b.latlng[1])
+  );
+});
+```
+
+### Algorithm to Find Nearest Country
+
+The algorithm for finding the nearest country is:
+
+```typescript
+/**
+ * Calculates the distance between two geographical coordinates using the Haversine formula.
+ * https://en.wikipedia.org/wiki/Haversine_formula
+ * @param lat1 - Latitude of the first point
+ * @param lon1 - Longitude of the first point
+ * @param lat2 - Latitude of the second point
+ * @param lon2 - Longitude of the second point
+ * @returns The distance between the two points in kilometers
+ */
+// Calculate the distance between two points on the Earth's surface
+const distance = function (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  // Convert degrees to radians
+  const radlat1 = (Math.PI * lat1) / 180;
+  const radlat2 = (Math.PI * lat2) / 180;
+  const theta = lon1 - lon2;
+  const radtheta = (Math.PI * theta) / 180;
+
+  // Apply Haversine formula
+  let dist =
+    Math.sin(radlat1) * Math.sin(radlat2) +
+    Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+  dist = Math.acos(dist);
+  dist = (dist * 180) / Math.PI;
+  dist = dist * 60 * 1.1515;
+  dist = dist * 1.609344; // Convert to kilometers
+  return dist;
+};
+```
+
+That find nearset base on the location of the user

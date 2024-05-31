@@ -10,9 +10,14 @@ type Props = {
 
 function UseGetCountries({ location, search }: Props) {
   const [countries, setCountries] = useState<Array<Country>>([]);
+
+  // Loading state
   const [loading, setLoading] = useState<boolean>(false);
 
+  // Fetch countries based on the search value
+  // Define useCallback to avoid creating a new function on every render
   const fetchCountries = useCallback(async () => {
+    // If there is a search value, fetch countries
     if (search) {
       setLoading(true);
       const countries = await countryService.getCountryBySearch(
@@ -21,7 +26,9 @@ function UseGetCountries({ location, search }: Props) {
       );
       setLoading(false);
       setCountries(countries);
-    } else {
+    }
+    // If there is no search value, clear the countries, I'm assuming that the countries are not needed anymore and reduce request to the server
+    else {
       setCountries([]);
     }
   }, [location, search]);
