@@ -15,7 +15,9 @@
     "format": "prettier -w .",
     "format:check": "prettier -c .",
     "postbuild": "next-sitemap --config next-sitemap.config.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "axios": "^1.7.2",
@@ -29,8 +31,20 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "1.5.0",
     "@commitlint/cli": "^16.3.0",
     "@commitlint/config-conventional": "^16.2.4",
+    "@storybook/addon-actions": "^8.1.5",
+    "@storybook/addon-essentials": "^8.1.5",
+    "@storybook/addon-interactions": "^8.1.5",
+    "@storybook/addon-links": "^8.1.5",
+    "@storybook/addon-onboarding": "^8.1.5",
+    "@storybook/addons": "^7.6.17",
+    "@storybook/blocks": "^8.1.5",
+    "@storybook/nextjs": "^8.1.5",
+    "@storybook/preset-create-react-app": "^8.1.5",
+    "@storybook/react": "^8.1.5",
+    "@storybook/test": "^8.1.5",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/forms": "^0.5.7",
     "@testing-library/jest-dom": "^5.17.0",
@@ -44,6 +58,7 @@
     "eslint-config-next": "^14.0.4",
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-storybook": "^0.8.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
@@ -53,6 +68,7 @@
     "postcss": "^8.4.32",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.5.0",
+    "storybook": "^8.1.5",
     "tailwindcss": "^3.3.6",
     "typescript": "^4.9.5"
   },
