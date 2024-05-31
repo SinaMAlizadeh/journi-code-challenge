@@ -11,6 +11,7 @@ module.exports = {
     'next/core-web-vitals',
     'plugin:@typescript-eslint/recommended',
     'prettier',
+    'plugin:storybook/recommended',
   ],
   rules: {
     'no-unused-vars': 'off',
@@ -77,6 +78,7 @@ module.exports = {
     ],
     //#endregion  //*======== Import Sort ===========
   },
+  ignorePatterns: ['!**/.storybook/'],
   globals: {
     React: true,
     JSX: true,
