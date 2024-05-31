@@ -1,23 +1,29 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from 'react';
 
-import { Country, Location } from "@/models/country"
-import countryService from "@/services/country";
+import { Country, Location } from '@/models/country';
+import countryService from '@/services/country';
 
 type Props = {
-  location : Location,
-  search : string
+  location: Location;
+  search: string;
+};
 
-}
-
-function UseGetCountries({location , search} :Props) {
+function UseGetCountries({ location, search }: Props) {
   const [countries, setCountries] = useState<Array<Country>>([]);
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchCountries = useCallback(async () => {
-    setLoading(true)
-    const countries = await countryService.getCountryBySearch(search, location);
-    setLoading(false)
-    setCountries(countries);
+    if (search) {
+      setLoading(true);
+      const countries = await countryService.getCountryBySearch(
+        search,
+        location
+      );
+      setLoading(false);
+      setCountries(countries);
+    } else {
+      setCountries([]);
+    }
   }, [location, search]);
 
   useEffect(() => {
@@ -26,8 +32,8 @@ function UseGetCountries({location , search} :Props) {
 
   return {
     countries,
-    loading
-  }
+    loading,
+  };
 }
 
-export default UseGetCountries
+export default UseGetCountries;
