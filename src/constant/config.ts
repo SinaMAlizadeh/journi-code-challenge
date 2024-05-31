@@ -1,9 +1,8 @@
 export const siteConfig = {
-  title: 'Next.js + Tailwind CSS + TypeScript Starter',
-  description:
-    'A starter for Next.js, Tailwind CSS, and TypeScript with Absolute Import, Seo, Link component, pre-configured with Husky',
+  title: 'Journi interview code challenge',
+  description: '',
   /** Without additional '/' on the end, e.g. https://theodorusclarence.com */
-  url: 'https://tsnext-tw.thcl.dev',
-  base_url:"http://localhost:3000/",
-  ip_finder_url:"http://ip-api.com/json"
+  url: 'https://journi-code-challenge.vercel.app/',
+  base_url: 'http://localhost:3000/',
+  ip_finder_url: 'http://ip-api.com/json',
 };
